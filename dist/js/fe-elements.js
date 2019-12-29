@@ -106,6 +106,52 @@ const elementFEDetailsContent = `
       </div>
 `
 
+const elementCourseDetailsModal = `
+<div class="modal fade" id="CourseDetailsModal">
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Kursdetails</h4>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+		<div id="kurstitel">
+		
+		</div>
+		
+		<h3>Kurstermine</h3>
+		<small>
+		<table class="table-sm table-striped">
+			<thead>
+				<tr>
+					<th>Kursname</th><th>Von</th><th>Bis</th><th>Ort</th><th>Trainer</th><th colspan="2">Optionen</th>
+				</tr>
+			</thead>
+			
+			<tbody id="kurstabelle">
+	
+			</tbody>
+
+	    </table>
+		</small>
+		
+		<div id="kursdetails">
+
+		</div>
+    </div>
+    <div class="modal-footer text-center">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+    </div>
+  </div>
+  <!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+`
+
 
 
 
