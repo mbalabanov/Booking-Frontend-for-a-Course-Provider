@@ -122,11 +122,11 @@ const elementCourseDetailsModal = `
 		</div>
 		
 		<h3>Kurstermine</h3>
-		<small>
-		<table class="table-sm table-striped">
+
+		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Kursname</th><th>Von</th><th>Bis</th><th>Ort</th><th>Trainer</th><th colspan="2">Optionen</th>
+					<th>Termine</th><th>Ort</th><th>Trainer</th><th colspan="2">Optionen</th>
 				</tr>
 			</thead>
 			
@@ -135,7 +135,7 @@ const elementCourseDetailsModal = `
 			</tbody>
 
 	    </table>
-		</small>
+
 		
 		<div id="kursdetails">
 

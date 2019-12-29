@@ -98,13 +98,11 @@ async function displayCourseDetails(filterID) {
 		
 		$('#kurstabelle').append(`
 			<tr>
-				<td>${filteredEventsData[i].name}</td>
-				<td>${filteredEventsData[i].startDate}</td>
-				<td>${filteredEventsData[i].endDate}</td>
+				<td>${filteredEventsData[i].startDate} bis <br>${filteredEventsData[i].endDate}</td>
 				<td>${filteredLocationsData[0].name}</td>
 				<td>${filteredTrainersData[0].firstName} ${filteredTrainersData[0].lastName}</td>
-				<td><a href="zeitplan.html?course=${filteredCoursesData[0].id}&event=${filteredEventsData[i].id}" class="btn btn-outline-secondary btn-sm stundenplan" target="_blank">Stundenplan</a></td>
-				<td><a href="#" class="btn btn-success btn-sm bestellen" data-eventid="${filteredEventsData[i].id}">Buchen</a></td>
+				<td><a href="stundenplan.html?course=${filteredCoursesData[0].id}&event=${filteredEventsData[i].id}" class="btn btn-outline-secondary btn-sm" target="_blank">Stundenplan</a></td>
+				<td><a href="#" class="btn btn-primary btn-sm bestellen" data-eventid="${filteredEventsData[i].id}">Buchen</a></td>
 			</tr>
 		`);
 

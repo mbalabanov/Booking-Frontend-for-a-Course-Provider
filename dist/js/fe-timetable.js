@@ -40,7 +40,8 @@ async function displayTimetable(courseID, eventID) {
 			<h2>${filteredCoursesData[0].name}</h2>
 			<p>${filteredCoursesData[0].shortDescription}</p>
 			<h4>Veranstaltungsort</h4>
-			<p>${filteredLocations[0].name} - ${filteredLocations[0].shortDescription}. ${filteredLocations[0].street}, ${filteredLocations[0].zipCode}, ${filteredLocations[0].city}.</p>
+			<p><strong>${filteredLocations[0].name}</strong> - <em>${filteredLocations[0].shortDescription}</em><br/>
+			${filteredLocations[0].street}, ${filteredLocations[0].zipCode} ${filteredLocations[0].city}.</p>
 		`);
 
 	$('#zeitplantabelle').empty();
