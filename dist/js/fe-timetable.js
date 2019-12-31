@@ -1,5 +1,7 @@
 'use strict';
 
+moment.locale('de-at');
+
 const APIURL = 'https://apiserver010.herokuapp.com/';
 const searchParams = new URLSearchParams(window.location.search)
 
@@ -48,7 +50,8 @@ async function displayTimetable(courseID, eventID) {
 	
 	for (let i in filteredTimetable) {
 		let filteredTrainer = rawPersonsData.filter(item => item.id == filteredTimetable[i].trainerID);
-		$('#zeitplantabelle').append(`<tr><td>${filteredEventsData[0].name}</td><td>${filteredTimetable[i].date}</td><td>${filteredTimetable[i].from}</td><td>${filteredTimetable[0].to}</td><td>${filteredTrainer[0].firstName} ${filteredTrainer[0].lastName}</td><td>${filteredTimetable[0].room}</td></tr>`);
+		let timetableDateMoment = moment(filteredTimetable[i].date).format('LL');
+		$('#zeitplantabelle').append(`<tr><td>${filteredEventsData[0].name}</td><td>${timetableDateMoment}</td><td>${filteredTimetable[i].from}</td><td>${filteredTimetable[0].to}</td><td>${filteredTrainer[0].firstName} ${filteredTrainer[0].lastName}</td><td>${filteredTimetable[0].room}</td></tr>`);
 	}
 
 }
