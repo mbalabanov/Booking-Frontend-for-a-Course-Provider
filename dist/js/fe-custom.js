@@ -4,9 +4,11 @@
 
 'use strict';
 
+// MomentJS initialisieren
 moment.locale('de-at');
 const datumHeuteL = moment().format('L');
 
+// Toastr Einstellungen definieren
 toastr.options = {
   "closeButton": true,
   "debug": false,
@@ -25,27 +27,46 @@ toastr.options = {
   "hideMethod": "slideUp"
 }
 
-
+// API URL definieren
 const APIURL = 'https://apiserver010.herokuapp.com/';
 // const APIURL = 'http://localhost:3000/';
 
-let courseData = null;
+// Globale Variablen definieren
+const rawCoursesData = {};
+const rawEventsData = {};
+const rawLocationsData = {};
+const rawPersonsData = {};
+const rawTimetableData = {};
+const rawBookingsData = {};
+const rawMessagesData = {};
 
-function renderFrontendDisplay() {
+let filteredCoursesData = {}; 
+let filteredEventsData = {};
+let filteredLocationsData = {};
+let filteredTrainersData = {};
+let filteredStudentsData = {};
+let filteredBookingsData = {};
+let filteredMessagesData = {};
 
-	$('#fewrapper')
-		.empty()
-		.append(elementFENavbar)
-		.append('<div class="container">' + elementFEJumbotron +'</div>')
-		.append(elementFECourseArea)
-		.append('<div class="container">' + elementFEFooterJumbotron +'</div>')
-		.append(elementFEFooter)
-		.append(elementCourseDetailsModal)
-		.append(elementBookingModal);
+let startDateMoment = '';
+let endDateMoment = '';
 
-		loadTeasers();
-}
+let filterKursID = '';
+let filterEventID = '';
+let trainerMailList = [];
 
+let studentFirstName = '';
+let studentLastName = '';
+let studentEmail = '';
+let studentPhone = '';
+let studentStreet = '';
+let studentCity =  '';
+let studentZipCode = '';
+let messageSubject = '';
+let buchendetails = '';
+
+
+// Funktion für die Ansprache der API (lesen und schreiben)
 async function asyncAPI(method, data, table, id) {
     const newID = (!id) ? '' : id;
     const url = `${APIURL}${table}/${newID}`;
@@ -60,44 +81,69 @@ async function asyncAPI(method, data, table, id) {
     return response.data;
 }
 
-async function loadTeasers() {
-    const allCourses = await asyncAPI('get', null, 'courses');
+// Funktion für den Aufbau und der Anzeige der Startseite
+function renderFrontendDisplay() {
+	$('#fewrapper')
+		.empty()
+		.append(elementFENavbar)
+		.append('<div class="container">' + elementFEJumbotron +'</div>')
+		.append(elementFECourseArea)
+		.append('<div class="container">' + elementFEFooterJumbotron +'</div>')
+		.append(elementFEFooter)
+		.append(elementCourseDetailsModal);
+
+		alleDatenHolen();
+}
+
+// Erster API-Aufruf, um die Daten einzuholen
+async function alleDatenHolen() {
+	rawCoursesData = await asyncAPI('get', null, 'courses');
+	rawEventsData = await asyncAPI('get', null, 'events');
+	rawLocationsData = await asyncAPI('get', null, 'locations');
+	rawPersonsData = await asyncAPI('get', null, 'persons');
+	rawTimetableData = await asyncAPI('get', null, 'timetables');
+	rawBookingsData = await asyncAPI('get', null, 'bookings');
+	rawMessagesData = await asyncAPI('get', null, 'messages');
 	
-	for (let i in allCourses) {
+	loadTeasers();
+	
+}
+
+// Die Boxen mit den Kursen auf der Startseite anzeigen
+function loadTeasers() {
+
+	for (let i in rawCoursesData) {
 		$('#teaser').append(`
 		  <div class="col-sm-6 col-lg-4 mt-4">
 			<div class="card h-100">
-			  <a href="#" data-courseid="${allCourses[i].id}" class="teaseropen" data-toggle="modal" data-target="#CourseDetailsModal"><img class="card-img-top" src="${allCourses[i].imageurl}" alt="${allCourses[i].name}"></a>
+			  <a href="#" data-courseid="${rawCoursesData[i].id}" class="teaseropen" data-toggle="modal" data-target="#CourseDetailsModal"><img class="card-img-top" src="${rawCoursesData[i].imageurl}" alt="${rawCoursesData[i].name}"></a>
 			  <div class="card-body">
-				<h5 class="card-title"><a href="#" data-courseid="${allCourses[i].id}" class="teaseropen" data-toggle="modal" data-target="#CourseDetailsModal">${allCourses[i].name}</a></h5>
-				<p class="card-text">${allCourses[i].shortDescription}</p>
+				<h5 class="card-title"><a href="#" data-courseid="${rawCoursesData[i].id}" class="teaseropen" data-toggle="modal" data-target="#CourseDetailsModal">${rawCoursesData[i].name}</a></h5>
+				<p class="card-text">${rawCoursesData[i].shortDescription}</p>
 			  </div>
 			  <div class="card-footer">
-				<a href="#" data-courseid="${allCourses[i].id}" class="btn btn-primary teaseropen" data-toggle="modal" data-target="#CourseDetailsModal">Kursinfo</a>
+				<a href="#" data-courseid="${rawCoursesData[i].id}" class="btn btn-primary teaseropen" data-toggle="modal" data-target="#CourseDetailsModal">Kursinfo</a>
 			  </div>
 			</div>
 		  </div>
 		`)
 	}
 	
+	// Wenn auf den Button im Kursteaser geklickt wird, dann wird die KursID übernommen und an die Funktion übergeben
 	$('.teaseropen').click(function() {
-		let filterID = $(this).data('courseid')
-		event.preventDefault();
-		displayCourseDetails(filterID);
+		filterKursID = $(this).data('courseid')
+		displayCourseDetails(filterKursID);
 	});
 
 }
 
-async function displayCourseDetails(filterID) {
-	const rawCoursesData = await asyncAPI('get', null, 'courses');
-	const rawEventsData = await asyncAPI('get', null, 'events');
-	const rawLocationsdata = await asyncAPI('get', null, 'locations');
-	const rawPersonsdata = await asyncAPI('get', null, 'persons');
-	const rawBookingsdata = await asyncAPI('get', null, 'bookings');
+async function displayCourseDetails(filterKursID) {
 	
-	let filteredCoursesData = rawCoursesData.filter(item => item.id == filterID);
-	let filteredEventsData = rawEventsData.filter(item => item.courseID == filterID);
+	// Die Daten werden anhand der übernommenen ID gefiltert, um die Detailansicht aufzubauen
+	filteredCoursesData = rawCoursesData.filter(item => item.id == filterKursID);
+	filteredEventsData = rawEventsData.filter(item => item.courseID == filterKursID);
 	
+	// Der Jumbotron am Anfang der Kursdetails wird angezeigt
 	$('#kurstitel')
 		.empty()
 		.append(`
@@ -107,21 +153,26 @@ async function displayCourseDetails(filterID) {
 			</div>
 		`);
 	
-	$('#kurstabelle').empty()
-	
+	// Die Kurstabelle wird geleert, dann werden die einzelnen Event-Zeilen generiert, aus denen dann die Kurstabelle zusammengestellt wird
+	$('#kurstabelle').empty();
 	for (let i in filteredEventsData) {
 
+		// Der Buchungsgrad wird geleert, um für die jeweilige Event-Zeile anzuzeigen, ob noch Plätze frei sind.
 		let buchungsGrad = '';
-		const filteredBookingsData = rawBookingsdata.filter(item => item.eventID == filteredEventsData[i].id);
-		const anzahlBuchungen = Object.keys(filteredBookingsData).length;
-	
-		const filteredLocationsData = rawLocationsdata.filter(item => item.id == filteredEventsData[i].locationID);
-		const filteredTrainersData = rawPersonsdata.filter(item => item.id == filteredEventsData[i].trainerID);
-		const startDateMoment = moment(filteredEventsData[i].startDate).format('ll');
-		const endDateMoment = moment(filteredEventsData[i].endDate).format('ll');
-		const datumKursL = moment(filteredEventsData[i].startDate).format('L');
-		let deprecated = '';
 
+		// Die dazugehörigen Buchungen werden anhand der EventID gesucht, die Anzahl der Buchungen wird ermittelt
+		filteredBookingsData = rawBookingsData.filter(item => item.eventID == filteredEventsData[i].id);
+		const anzahlBuchungen = Object.keys(filteredBookingsData).length;
+
+		// Die dazugehörigen Locations und Trainer werden anhand der EventID gesucht
+		filteredLocationsData = rawLocationsData.filter(item => item.id == filteredEventsData[i].locationID);
+		filteredTrainersData = rawPersonsData.filter(item => item.id == filteredEventsData[i].trainerID);
+
+		// Hier wird das Datum des jeweiligen Events geholt und mit MomentJS menschenlesbar gemacht
+		startDateMoment = moment(filteredEventsData[i].startDate).format('ll');
+		endDateMoment = moment(filteredEventsData[i].endDate).format('ll');
+
+		// Abhängig von der Anzahl der Buchungen und der Kapazität eines Kurses wird die Warnung über den Buchungsgrad vorbereitet, um berücksichtigt zu werden, wenn im nächsten Schritt die Tabelle generiert wird
 		if (anzahlBuchungen >= filteredEventsData[i].capacity) {
 			buchungsGrad=`<td><small><div class="alert alert-danger text-center">Ausgebucht</div></small></td></td><td><a href="stundenplan.html?course=${filteredCoursesData[0].id}&event=${filteredEventsData[i].id}" class="btn btn-outline-secondary btn-sm" target="_blank">Stundenplan</a></td>`;
 		} else if (anzahlBuchungen >= (filteredEventsData[i].capacity/5)*4) {
@@ -130,6 +181,7 @@ async function displayCourseDetails(filterID) {
 			buchungsGrad=`<td><small><div class="alert alert-success text-center">Plätze frei</div></small></td><td><a href="stundenplan.html?course=${filteredCoursesData[0].id}&event=${filteredEventsData[i].id}" class="btn btn-outline-secondary btn-sm text-center" target="_blank">Stundenplan</a><br><a href="#" class="btn btn-primary btn-sm mt-2 text-center bookingopen" data-eventid="${filteredEventsData[i].id}" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#bookingModal">Jetzt buchen</a></td>`;
 		}
 		
+		// Wenn das Startdatum eines Kurses in der Vergangenheit liegt, dann wird die Kurstabelle die Buchungsoption und mit einem Hinweis angezeigt
 		if (moment().isAfter(filteredEventsData[i].startDate)) {
 			$('#kurstabelle').append(`
 				<tr>
@@ -142,7 +194,7 @@ async function displayCourseDetails(filterID) {
 		} else {
 			$('#kurstabelle').append(`
 				<tr>
-					<td>${startDateMoment} bis <br>${endDateMoment}<br><span id="pastevent${i}">${deprecated}</span></td>
+					<td>${startDateMoment} bis <br>${endDateMoment}</td>
 					<td><a href="#" tabindex="${i}"role="button" class="popover-test" data-trigger="focus" data-toggle="popover" title="${filteredLocationsData[0].name}" data-content="${filteredLocationsData[0].street}, ${filteredLocationsData[0].zipCode} ${filteredLocationsData[0].city}">${filteredLocationsData[0].name}</a></td>
 					<td>${filteredTrainersData[0].firstName} ${filteredTrainersData[0].lastName}</td>
 					${buchungsGrad}
@@ -151,6 +203,7 @@ async function displayCourseDetails(filterID) {
 		}
 	}
 	
+	// Die Kursbeschreibung wird zusammengestellt
 	$('#kursdetails')
 		.empty()
 		.append(`
@@ -214,215 +267,186 @@ async function displayCourseDetails(filterID) {
 				</div>
 			</div>
 		`);
-		
+
+		// Der Popover für die Location-Daten wird initialisiert
 		$(function () {
 		  $('[data-toggle="popover"]').popover()
 		})
 		
+		// Das Modal für die Buchung wird auf der Seite vorbereitet
+		$('#fewrapper').append(elementBookingModal);
+		
+		// Der Button für die Buchung wird mit einem Eventlistener vorbereitet, damit bei Klick die Buchungsansicht angezeigt wird
 		$('.bookingopen').click(function() {
-			let filterID = $(this).data('eventid')
-			displayCourseBooking(filterID);
+			filterEventID = $(this).data('eventid')
+			displayCourseBooking(filterEventID);
 		});
 }
 
-async function displayCourseBooking(filterID) {
-	const rawEventsData = await asyncAPI('get', null, 'events');
-	const rawLocationsData = await asyncAPI('get', null, 'locations');
-	const rawPersonsdata = await asyncAPI('get', null, 'persons');
-	let filteredEventsData = rawEventsData.filter(item => item.id == filterID);
-	let filteredLocationsData = rawLocationsData.filter(item => item.id == filteredEventsData[0].locationID);
-	let filteredTrainerData = rawPersonsdata.filter(item => item.isTrainer);
+// In der Buchungsansicht werden die Kursdetails angezeigt, dann wird das Buchungsformular bereitgestellt
+async function displayCourseBooking(filterEventID) {
+	filteredEventsData = rawEventsData.filter(item => item.id == filterEventID);
+	filteredLocationsData = rawLocationsData.filter(item => item.id == filteredEventsData[0].locationID);
+	filteredTrainersData = rawPersonsData.filter(item => item.isTrainer);
 
-	let courseStartDateMoment = moment(filteredEventsData[0].startDate).format('LL');
-	let courseEndDateMoment = moment(filteredEventsData[0].endDate).format('LL');
+	startDateMoment = moment(filteredEventsData[0].startDate).format('LL');
+	endDateMoment = moment(filteredEventsData[0].endDate).format('LL');
 
 	// Trainer für die Benachrichtigung heraussuchen
-	let trainerMailList = [];
-	for (let i in filteredTrainerData) {
-		trainerMailList.push(filteredTrainerData[i].id);
+	for (let i in filteredTrainersData) {
+		trainerMailList.push(filteredTrainersData[i].id);
 	}
-	
-	$('#buchendetails')
+
+	// Die Buchungsdetails werden vorbereitet und im Buchungs-Modal eingefügt
+	$('#buchungsdetails')
 		.empty()
 		.append(`
 			<table class="table table-striped">
 				<tbody>
 					<tr><td colspan="2"><h4>${filteredEventsData[0].name} </h4></td></tr>
-					<tr><th>Termin: </th><td>${courseStartDateMoment} bis ${courseEndDateMoment} </td></tr>
+					<tr><th>Termin: </th><td>${startDateMoment} bis ${endDateMoment} </td></tr>
 					<tr><th>Kursbezeichnung: </th><td><span id="kursbezeichnung">${filteredEventsData[0].name} (ID${filteredEventsData[0].id})</span></td></tr>
 					<tr><th>Ort: </th><td>${filteredLocationsData[0].name}, ${filteredLocationsData[0].street}, ${filteredLocationsData[0].zipCode} ${filteredLocationsData[0].city} </td></tr>
 					<tr><th>Preis: </th><td>€ ${filteredEventsData[0].price},-</td></tr>
 				</tbody>
 			</table>
 		`);
-	$('#anmeldeformular')
-		.empty()
-		.append(anmeldeformular);
 
-    $('#buttonSMTPMailer').click(async function(event) {
-        event.preventDefault();
-
-		const rawStudentData = await asyncAPI('get', null, 'persons');
-		const rawStudentsBookingsData = await asyncAPI('get', null, 'bookings');
-
-		let firstName = $('#formSMTPMailer [name=firstname]').val();
-		let lastName = $('#formSMTPMailer [name=lastname]').val();
-		let studentEmail = $('#formSMTPMailer [name=to]').val();
-		let studentPhone = $('#formSMTPMailer [name=phone]').val();
-		let studentStreet = $('#formSMTPMailer [name=street]').val();
-		let studentCity = $('#formSMTPMailer [name=city]').val();
-		let studentZipCode = $('#formSMTPMailer [name=zipCode]').val();
-		let messageSubject = $('#kursbezeichnung').text();
-		let bookedCourse = $('#buchendetails').text();
+	// Bei Klick auf den Button für die Event-Anmeldung wird das Formular validiert
+    $('#buttonEventBuchung').click(function() {
+		console.log('Der Button für die Eventbuchung wurde geklickt');
 		
-		// Wenn der Benutzeraccount, nicht angelegt ist, dann Benutzeraccount anlegen
-		// Wenn der Benutzeraccount angelegt ist, aber der Benutzer nicht in diesem Kurs angemeldet ist, dann Benutzer anmelden
-		// Wenn Benutzer für den Kurs angemeldet ist, dann Fehlermeldung ausgeben
+		// Die Anmeldedaten des Studenten werden geholt
+		studentFirstName = $('#formAnmeldungDaten [name=firstname]').val();
+		studentLastName = $('#formAnmeldungDaten [name=lastname]').val();
+		studentEmail = $('#formAnmeldungDaten [name=to]').val();
+		studentPhone = $('#formAnmeldungDaten [name=phone]').val();
+		studentStreet = $('#formAnmeldungDaten [name=street]').val();
+		studentCity = $('#formAnmeldungDaten [name=city]').val();
+		studentZipCode = $('#formAnmeldungDaten [name=zipCode]').val();
+		messageSubject = $('#kursbezeichnung').text();
+		buchungsdetails = $('#buchungsdetails').text();
 		
-		
-		// Nachprüfen, ob der Benutzeraccount bereits angelegt ist
-
-		if (!rawStudentData.find(item => item.email == studentEmail)) {
-			$('#bookingModal').modal('hide');
-
-			const studentData = {
-				firstName: firstName,
-				lastName: lastName,
-				photo: '',
-				url: '',
-				phone: studentPhone,
-				email: studentEmail,
-				password: '',
-				street: studentStreet,
-				city: studentCity,
-				zipCode: studentZipCode,
-				isAdmin: false,
-				isTrainer: false,
-				isStudent: true,
-				isSystem: false,
-				isDeleted: false
-			}
-		
-			await asyncAPI('post', studentData, 'persons');
-		
-			// Die StudentID des neuen Kursteilnehmers einholen
-			const rawPersonsIDData = await asyncAPI('get', null, 'persons');
-			const filteredStudentIDData = rawPersonsIDData.filter(item => item.email == studentEmail);
-
-			let studentMessagetext = `
-			Hallo ${firstName} ${lastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
-			${bookedCourse}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team
-			`;
-		
-			let adminMessagetext = `
-			Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${firstName} ${lastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
-			${bookedCourse} - Dies ist eine automatische Nachricht.
-			`;
-
-			const studentResult = await Email.send({
-				SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
-				To : $('#formSMTPMailer [name=to]').val(),
-				From : "marincomics@gmail.com",
-				Subject : messageSubject,
-				Body : studentMessagetext
-			});
-		
-			if (studentResult === 'OK') {
-				toastr.success('Ihr Benutzer wurde angelegt und Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Benutzer angelegt und Kurs gebucht!')
-				
-				const bookingData = {
-					eventID: filterID,
-					studentID: filteredStudentIDData[0].id,
-					paid: false,
-					finished: false,
-					certificate: false
-				}
-		
-				await asyncAPI('post', bookingData, 'bookings');
-
-				for (let i in trainerMailList) {
-			
-					let adminMessageData = {
-						date: datumHeuteL,
-						personSenderID: 0,
-						personReceiverID: trainerMailList[i],
-						subject: messageSubject,
-						body: adminMessagetext,
-						read: false	
-					}
-
-					await asyncAPI('post', adminMessageData, 'messages');
-				}
-				
-			} else {
-				toastr.error('Es ist ein Fehler bei der Buchung aufgetreten.', 'Fehler bei der Buchung')
-				return false;
-			}
-
-		} else {
-			$('#bookingModal').modal('hide');
-
-			let filteredStudentID = rawStudentData.filter(item => item.email == studentEmail);
-			console.log('filteredStudentID vor der if-Abfrage');
-			console.log(filteredStudentID);
-
-
-			if (rawStudentsBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
-				toastr.primary('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
-			} else {
-			
-				let studentMessagetext = `Hallo ${firstName} ${lastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
-				${bookedCourse}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team`;
-		
-				let adminMessagetext = `Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${firstName} ${lastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
-				${bookedCourse} - Dies ist eine automatische Nachricht.`;
-
-				const studentResult = await Email.send({
-					SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
-					To : $('#formSMTPMailer [name=to]').val(),
-					From : "marincomics@gmail.com",
-					Subject : messageSubject,
-					Body : studentMessagetext
-				});
-		
-				if (studentResult === 'OK') {
-					toastr.warning('Ihre Kursanmeldung wurde erfolgreich durchgeführt. Ihr Benutzer war bereits angelegt.', 'Kurs gebucht!');
-					
-					console.log('filteredStudentID vor der Fehlermeldung');
-					console.log(filteredStudentID);
-					
-					const bookingData = {
-						eventID: filterID,
-						studentID: filteredStudentID[0].id,
-						paid: false,
-						finished: false,
-						certificate: false
-					}
-		
-					await asyncAPI('post', bookingData, 'bookings');
-
-					for (let i in trainerMailList) {
-						let adminMessageData = {
-							date: datumHeuteL,
-							personSenderID: 0,
-							personReceiverID: trainerMailList[i].id,
-							subject: messageSubject,
-							body: adminMessagetext,
-							read: false
-						}
-
-						await asyncAPI('post', adminMessageData, 'messages');	
-					}
-
-				} else {
-					toastr.error('Es ist ein Fehler bei der Buchung aufgetreten.', 'Fehler bei der Buchung');
-					return false;
-				}
-
-			}
-		
+		if (studentFirstName.length > 0 && studentLastName.length > 0 && studentEmail.length > 0) {
+			buchenFormCheckPerson()
 		}
-
+		
     });
 
+}
+
+function buchenFormCheckPerson() {
+
+		// Es wird abgefragt, ob es die Person bereits gibt
+		if (!rawPersonsData.find(item => item.email == studentEmail)) {
+		
+			console.log('Jetzt in der If-Abfrage für eine neue Person');
+			// Da es die Person noch nicht gibt (und sie somit nicht bereits bei einem Kurs angemeldet sein kann), wird die Person angelegt und die Kursanmeldung durchgeführt
+			studentAnlegen();
+			studentKursAnmelden();
+
+		} else {
+
+			console.log('Jetzt in der If-Abfrage für eine existierende Person');
+
+			// Da es die Person bereits gibt, wird nun nachgesehen, ob sie sich für diesen Event angemeldet hat.
+			let filteredStudentID = rawPersonsData.filter(item => item.email == studentEmail);			
+			if (rawBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
+
+				console.log('Jetzt in der If-Abfrage für eine existierende Person mit einer existierenden Anmeldung');
+				// Die Kursanmeldung ist nicht erforderlich, da die Person bereits für diesen Kurs angemeldet ist.
+				toastr.primary('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
+			} else {				
+
+				console.log('Jetzt in der If-Abfrage für eine existierende Person ohne existierender Anmeldung - Nur die Kursanmeldung wird durchgeführt');
+				// Es wird nur die Kursanmeldung durchgeführt.
+				studentKursAnmelden();
+			}
+		}
+}
+
+async function studentAnlegen() {
+
+	console.log('Funktion: Neuer Student wird angelegt');
+	// Die Daten des neu anzulegenden Students werden zusammengestellt
+	const studentData = {
+		firstName: studentFirstName,
+		lastName: studentLastName,
+		photo: '',
+		url: '',
+		phone: studentPhone,
+		email: studentEmail,
+		password: '',
+		street: studentStreet,
+		city: studentCity,
+		zipCode: studentZipCode,
+		isAdmin: false,
+		isTrainer: false,
+		isStudent: true,
+		isSystem: false,
+		isDeleted: false
+	}
+
+	// Die neue Person wird über die API eingetragen
+	await asyncAPI('post', studentData, 'persons');
+	
+	// Die StudentID des neuen Kursteilnehmers wird hier eingeholt
+	const rawPersonsIDData = await asyncAPI('get', null, 'persons');
+	const filteredStudentIDData = rawPersonsIDData.filter(item => item.email == studentEmail);
+}
+
+async function studentKursAnmelden() {
+
+	console.log('Funktion: Kursanmeldung wird durchgeführt');
+	// Der Text für die Emailantwort an den Studenten wird zusammengestellt
+	const studentMessagetext = `
+	Hallo ${studentFirstName} ${studentLastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
+	${buchungsdetails}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team
+	`;
+
+	// Der Text für die Nachricht an die Administratoren wird zusammengestellt
+	const adminMessagetext = `
+	Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${studentFirstName} ${studentLastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
+	${buchungsdetails} - Dies ist eine automatische Nachricht.
+	`;
+
+	const studentResult = await Email.send({
+		SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
+		To : $('#formAnmeldungDaten [name=to]').val(),
+		From : "marincomics@gmail.com",
+		Subject : messageSubject,
+		Body : studentMessagetext
+	});
+
+	if (studentResult === 'OK') {
+		toastr.success('Ihr Benutzer wurde angelegt und Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Benutzer angelegt und Kurs gebucht!')
+		
+		const bookingData = {
+			eventID: filterEventID,
+			studentID: filteredStudentIDData[0].id,
+			paid: false,
+			finished: false,
+			certificate: false
+		}
+
+		await asyncAPI('post', bookingData, 'bookings');
+
+		for (let i in trainerMailList) {
+	
+			let adminMessageData = {
+				date: datumHeuteL,
+				personSenderID: 0,
+				personReceiverID: trainerMailList[i],
+				subject: messageSubject,
+				body: adminMessagetext,
+				read: false	
+			}
+
+			await asyncAPI('post', adminMessageData, 'messages');
+		}
+		
+	} else {
+		toastr.error('Es ist ein Fehler bei der Buchung aufgetreten.', 'Fehler bei der Buchung')
+		return false;
+	}
 }
