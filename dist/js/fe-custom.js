@@ -368,7 +368,7 @@ async function displayCourseBooking(filterID) {
 
 
 			if (rawStudentsBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
-				toastr.warning('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
+				toastr.primary('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
 			} else {
 			
 				let studentMessagetext = `Hallo ${firstName} ${lastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
@@ -386,7 +386,7 @@ async function displayCourseBooking(filterID) {
 				});
 		
 				if (studentResult === 'OK') {
-					toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt. Ihr Benutzer war bereits angelegt.', 'Kurs gebucht!');
+					toastr.warning('Ihre Kursanmeldung wurde erfolgreich durchgeführt. Ihr Benutzer war bereits angelegt.', 'Kurs gebucht!');
 					
 					console.log('filteredStudentID vor der Fehlermeldung');
 					console.log(filteredStudentID);

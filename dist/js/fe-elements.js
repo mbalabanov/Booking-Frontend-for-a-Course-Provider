@@ -5,7 +5,7 @@
 const elementFENavbar = `
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="#"><img src="dist/img/logo.png" width="20px">&nbsp;&nbsp;<strong>KURSI</strong></a>
+      <a class="navbar-brand" href="#"<strong>KURSI</strong>&nbsp;<img src="dist/img/logo.png" width="20px">&nbsp;KURSINSTITUT</a>
     </div>
   </nav>
   `
@@ -136,59 +136,48 @@ const elementBookingModal = `
 
 const anmeldeformular = `
 <form id="formSMTPMailer" action="#" method="post">
-  <small>
   <div class="form-group row">
-	<label for="smtpmailerFirstname" class="col-sm-2 col-form-label">Vorname:<sup>*</sup></label>
+	<label for="smtpmailerFirstname" class="col-sm-3 col-form-label text-right">Vorname:<sup>*</sup></label>
 	<div class="col-sm-5">
 		<input type="text" class="form-control" id="smtpmailerFirstname" name="firstname" required>
 	</div>
-	<div class="col-sm-3">
-		<div id="errorFirstname"></div>
-	</div>
   </div>
   <div class="form-group row">
-	<label for="smtpmailerLastname" class="col-sm-2 col-form-label">Nachname:<sup>*</sup></label>
+	<label for="smtpmailerLastname" class="col-sm-3 col-form-label text-right">Nachname:<sup>*</sup></label>
 	<div class="col-sm-5">
 		<input type="text" class="form-control" id="smtpmailerLastname" name="lastname" required>
 	</div>
-	<div class="col-sm-3">
-		<div id="errorLastname"></div>
-	</div>
   </div>
   <div class="form-group row">
-	<label for="smtpmailerTo" class="col-sm-2 col-form-label">Email-Adresse:<sup>*</sup></label>
+	<label for="smtpmailerTo" class="col-sm-3 col-form-label text-right">Email-Adresse:<sup>*</sup></label>
 	<div class="col-sm-5">
 		<input type="email" class="form-control" id="smtpmailerTo" name="to" required>
 	</div>
-	<div class="col-sm-3">
-		<div id="errorTo"></div>
-	</div>
   </div>
   <div class="form-group row">
-	<label for="smtpmailerPhone" class="col-sm-2 col-form-label">Telefonnummer:</label>
+	<label for="smtpmailerPhone" class="col-sm-3 col-form-label text-right">Telefonnummer:</label>
 	<div class="col-sm-5">
 		<input type="text" class="form-control" id="smtpmailerPhone" name="phone">
 	</div>
   </div>
   <div class="form-group row">
-	<label for="smtpmailerStreet" class="col-sm-2 col-form-label">Wohnadresse:</label>
+	<label for="smtpmailerStreet" class="col-sm-3 col-form-label text-right">Wohnadresse:</label>
 	<div class="col-sm-5">
 		<input type="text" class="form-control" id="smtpmailerStreet" name="street">
 	</div>
   </div>
   <div class="form-group row">
-	<label for="smtpmailerZipCode" class="col-sm-2 col-form-label">Postleitzahl:</label>
+	<label for="smtpmailerZipCode" class="col-sm-3 col-form-label text-right">Postleitzahl:</label>
 	<div class="col-sm-5">
 		<input type="text" class="form-control" id="smtpmailerZipCode" name="zipCode">
 	</div>
   </div>
   <div class="form-group row">
-	<label for="smtpmailerCity" class="col-sm-2 col-form-label">Ort:</label>
+	<label for="smtpmailerCity" class="col-sm-3 col-form-label text-right">Ort:</label>
 	<div class="col-sm-5">
 		<input type="text" class="form-control" id="smtpmailerCity" name="city">
 	</div>
   </div>
-  </small>
   <button type="submit" class="btn btn-primary" id="buttonSMTPMailer">Kurs buchen</button>
   <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Abbrechen</button>
 </form>
