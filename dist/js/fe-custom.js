@@ -345,7 +345,11 @@ async function displayCourseBooking(filterEventID) {
 			$('#studentEmailCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihre Email-Adresse ein.</div></small>');
 		}
 		
-		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4) {
+		if(!(/\S+@\S+\.\S+/.test(studentEmail))) {
+			$('#studentEmailCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie eine gültige Email-Adresse ein.</div></small>');
+		}
+		
+		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4 && /\S+@\S+\.\S+/.test(studentEmail)) {
 			buchenFormCheckPerson();
 			$('#bookingModal').modal('hide');
 		}
