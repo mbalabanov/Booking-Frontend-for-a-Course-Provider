@@ -327,7 +327,7 @@ async function displayCourseBooking(filterEventID) {
 		messageSubject = $('#kursbezeichnung').text();
 		buchungsdetails = $('#buchungsdetails').text();
 		
-		if (studentFirstName.length > 0 && studentLastName.length > 0 && studentEmail.length > 0) {
+		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4) {
 			buchenFormCheckPerson()
 		}
 		
@@ -419,7 +419,7 @@ async function studentKursAnmelden() {
 	});
 
 	if (studentResult === 'OK') {
-		toastr.success('Ihr Benutzer wurde angelegt und Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Benutzer angelegt und Kurs gebucht!')
+		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Kurs gebucht!')
 		
 		const bookingData = {
 			eventID: filterEventID,
