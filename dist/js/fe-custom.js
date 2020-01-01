@@ -359,6 +359,9 @@ async function buchenFormCheckPerson() {
 
 			// Die Kursanmeldung ist nicht erforderlich, da die Person bereits für diesen Kurs angemeldet ist.
 			toastr.error('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
+
+			// Nach der Fehlermeldung wird das Frontend einem Reset unterzogen
+			renderFrontendDisplay();
 		} else {				
 
 			// Es wird nur die Kursanmeldung durchgeführt.
@@ -411,6 +414,8 @@ async function studentKursAnmelden() {
 	${buchungsdetails} - Dies ist eine automatische Nachricht.
 	`;
 
+	// ACHTUNG! Dieser Code kann wegen des Domain-spezifischen Tokens nicht lokal oder auf einer anderen Domain ausgeführt werden.
+	// Es wurde in der Angabe zwar nicht verlangt, eine Buchungs-Email an den Student zu schicken, es macht aber Sinn dies zu tun, damit die Person eine Anmeldebestätigung hat.
 	const studentResult = await Email.send({
         SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
 		To : $('#formAnmeldungDaten [name=to]').val(),
@@ -457,6 +462,9 @@ async function studentKursAnmelden() {
 
 		// Wenn die Email nicht verschickt werden kann, dann kommt diese Fehlermeldung
 		toastr.error('Es ist ein Fehler bei der Buchung aufgetreten.', 'Fehler bei der Buchung')
+
+		// Nach der Fehlermeldung wird das Frontend einem Reset unterzogen
+		renderFrontendDisplay();
 		return false;
 	}
 }
