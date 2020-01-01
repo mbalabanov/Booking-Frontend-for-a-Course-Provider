@@ -77,8 +77,10 @@ async function asyncAPI(method, data, table, id) {
         data,
         timeout: 10000
     })
-
+    
+    console.log(response.data);
     return response.data;
+
 }
 
 // Funktion für den Aufbau und der Anzeige der Startseite
@@ -313,7 +315,9 @@ async function displayCourseBooking(filterEventID) {
 		`);
 
 	// Bei Klick auf den Button für die Event-Anmeldung wird das Formular validiert
-    $('#buttonEventBuchung').click(function() {
+    $('#buttonEventBuchung').click(function(event) {
+     	event.preventDefault();
+
 		console.log('Der Button für die Eventbuchung wurde geklickt');
 		
 		// Die Anmeldedaten des Studenten werden geholt
@@ -328,46 +332,48 @@ async function displayCourseBooking(filterEventID) {
 		buchungsdetails = $('#buchungsdetails').text();
 		
 		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4) {
-			buchenFormCheckPerson()
+			buchenFormCheckPerson();
+			$('#bookingModal').modal('hide');
 		}
 		
     });
 
 }
 
-function buchenFormCheckPerson() {
+async function buchenFormCheckPerson() {
 
-		// Es wird abgefragt, ob es die Person bereits gibt
-		if (!rawPersonsData.find(item => item.email == studentEmail)) {
-		
-			console.log('Jetzt in der If-Abfrage für eine neue Person');
-			// Da es die Person noch nicht gibt (und sie somit nicht bereits bei einem Kurs angemeldet sein kann), wird die Person angelegt und die Kursanmeldung durchgeführt
-			studentAnlegen();
+	// Vor der Buchung noch die Daten aktualisieren
+	rawEventsData = await asyncAPI('get', null, 'events');
+	rawPersonsData = await asyncAPI('get', null, 'persons');
+	rawBookingsData = await asyncAPI('get', null, 'bookings');
+
+	// Es wird abgefragt, ob es die Person bereits gibt
+	if (!rawPersonsData.find(item => item.email == studentEmail)) {
+	
+		// Da es die Person noch nicht gibt (und sie somit nicht bereits bei einem Kurs angemeldet sein kann), wird die Person angelegt und die Kursanmeldung durchgeführt
+		studentAnlegen();
+		studentKursAnmelden();
+
+	} else {
+
+		// Da es die Person bereits gibt, wird nun nachgesehen, ob sie sich für diesen Event angemeldet hat.
+		let filteredStudentID = rawPersonsData.filter(item => item.email == studentEmail);			
+		if (rawBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
+
+			// Die Kursanmeldung ist nicht erforderlich, da die Person bereits für diesen Kurs angemeldet ist.
+			toastr.error('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
+		} else {				
+
+			// Es wird nur die Kursanmeldung durchgeführt.
 			studentKursAnmelden();
-
-		} else {
-
-			console.log('Jetzt in der If-Abfrage für eine existierende Person');
-
-			// Da es die Person bereits gibt, wird nun nachgesehen, ob sie sich für diesen Event angemeldet hat.
-			let filteredStudentID = rawPersonsData.filter(item => item.email == studentEmail);			
-			if (rawBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
-
-				console.log('Jetzt in der If-Abfrage für eine existierende Person mit einer existierenden Anmeldung');
-				// Die Kursanmeldung ist nicht erforderlich, da die Person bereits für diesen Kurs angemeldet ist.
-				toastr.primary('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
-			} else {				
-
-				console.log('Jetzt in der If-Abfrage für eine existierende Person ohne existierender Anmeldung - Nur die Kursanmeldung wird durchgeführt');
-				// Es wird nur die Kursanmeldung durchgeführt.
-				studentKursAnmelden();
-			}
 		}
+	}
 }
 
 async function studentAnlegen() {
-
+	
 	console.log('Funktion: Neuer Student wird angelegt');
+
 	// Die Daten des neu anzulegenden Students werden zusammengestellt
 	const studentData = {
 		firstName: studentFirstName,
@@ -385,31 +391,18 @@ async function studentAnlegen() {
 		isStudent: true,
 		isSystem: false,
 		isDeleted: false
-	}
+	};
 
 	// Die neue Person wird über die API eingetragen
 	await asyncAPI('post', studentData, 'persons');
 	
-	// Die StudentID des neuen Kursteilnehmers wird hier eingeholt
-	const rawPersonsIDData = await asyncAPI('get', null, 'persons');
-	const filteredStudentIDData = rawPersonsIDData.filter(item => item.email == studentEmail);
 }
 
 async function studentKursAnmelden() {
 
-	console.log('Funktion: Kursanmeldung wird durchgeführt');
-	// Der Text für die Emailantwort an den Studenten wird zusammengestellt
-	const studentMessagetext = `
-	Hallo ${studentFirstName} ${studentLastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
-	${buchungsdetails}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team
-	`;
-
-	// Der Text für die Nachricht an die Administratoren wird zusammengestellt
-	const adminMessagetext = `
-	Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${studentFirstName} ${studentLastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
-	${buchungsdetails} - Dies ist eine automatische Nachricht.
-	`;
-
+	rawPersonsData = await asyncAPI('get', null, 'persons');
+	let filteredStudentIDData = rawPersonsData.filter(item => item.email == studentEmail);
+	
 	const studentResult = await Email.send({
 		SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
 		To : $('#formAnmeldungDaten [name=to]').val(),
@@ -419,8 +412,20 @@ async function studentKursAnmelden() {
 	});
 
 	if (studentResult === 'OK') {
-		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Kurs gebucht!')
-		
+
+		// Der Text für die Emailantwort an den Studenten wird zusammengestellt
+		const studentMessagetext = `
+		Hallo ${studentFirstName} ${studentLastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
+		${buchungsdetails}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team
+		`;
+
+		// Der Text für die Nachricht an die Administratoren wird zusammengestellt
+		const adminMessagetext = `
+		Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${studentFirstName} ${studentLastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
+		${buchungsdetails} - Dies ist eine automatische Nachricht.
+		`;
+
+		// Zusammenstellung des Bookings
 		const bookingData = {
 			eventID: filterEventID,
 			studentID: filteredStudentIDData[0].id,
@@ -429,10 +434,12 @@ async function studentKursAnmelden() {
 			certificate: false
 		}
 
+		// Eintragung in Bookings
 		await asyncAPI('post', bookingData, 'bookings');
 
+		// Zusammenstellung der Nachrichten für die Trainer und danach die Eintragung in Messages
 		for (let i in trainerMailList) {
-	
+
 			let adminMessageData = {
 				date: datumHeuteL,
 				personSenderID: 0,
@@ -444,8 +451,12 @@ async function studentKursAnmelden() {
 
 			await asyncAPI('post', adminMessageData, 'messages');
 		}
-		
+	
+		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Kurs gebucht!')
+	
 	} else {
+
+		// Wenn die Email nicht verschickt werden kann, dann kommt diese Fehlermeldung
 		toastr.error('Es ist ein Fehler bei der Buchung aufgetreten.', 'Fehler bei der Buchung')
 		return false;
 	}
