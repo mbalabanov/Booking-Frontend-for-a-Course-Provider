@@ -54,6 +54,7 @@ let endDateMoment = '';
 let filterKursID = '';
 let filterEventID = '';
 let trainerMailList = [];
+let newTempStudent = {};
 
 let studentFirstName = '';
 let studentLastName = '';
@@ -77,8 +78,7 @@ async function asyncAPI(method, data, table, id) {
         data,
         timeout: 10000
     })
-    
-    console.log(response.data);
+
     return response.data;
 
 }
@@ -317,8 +317,6 @@ async function displayCourseBooking(filterEventID) {
 	// Bei Klick auf den Button für die Event-Anmeldung wird das Formular validiert
     $('#buttonEventBuchung').click(function(event) {
      	event.preventDefault();
-
-		console.log('Der Button für die Eventbuchung wurde geklickt');
 		
 		// Die Anmeldedaten des Studenten werden geholt
 		studentFirstName = $('#formAnmeldungDaten [name=firstname]').val();
@@ -353,7 +351,6 @@ async function buchenFormCheckPerson() {
 		// Da es die Person noch nicht gibt (und sie somit nicht bereits bei einem Kurs angemeldet sein kann), wird die Person angelegt und die Kursanmeldung durchgeführt
 		studentAnlegen();
 		studentKursAnmelden();
-
 	} else {
 
 		// Da es die Person bereits gibt, wird nun nachgesehen, ob sie sich für diesen Event angemeldet hat.
@@ -371,8 +368,6 @@ async function buchenFormCheckPerson() {
 }
 
 async function studentAnlegen() {
-	
-	console.log('Funktion: Neuer Student wird angelegt');
 
 	// Die Daten des neu anzulegenden Students werden zusammengestellt
 	const studentData = {
@@ -400,11 +395,24 @@ async function studentAnlegen() {
 
 async function studentKursAnmelden() {
 
+	// Anhand der Email-Adresse nachprüfen, wie die StudentID des neu angelegten Students lautet
 	rawPersonsData = await asyncAPI('get', null, 'persons');
 	let filteredStudentIDData = rawPersonsData.filter(item => item.email == studentEmail);
-	
+
+	// Der Text für die Emailantwort an den Studenten wird zusammengestellt
+	const studentMessagetext = `
+	Hallo ${studentFirstName} ${studentLastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
+	${buchungsdetails}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team
+	`;
+
+	// Der Text für die Nachricht an die Administratoren wird zusammengestellt
+	const adminMessagetext = `
+	Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${studentFirstName} ${studentLastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
+	${buchungsdetails} - Dies ist eine automatische Nachricht.
+	`;
+
 	const studentResult = await Email.send({
-		SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
+        SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
 		To : $('#formAnmeldungDaten [name=to]').val(),
 		From : "marincomics@gmail.com",
 		Subject : messageSubject,
@@ -412,18 +420,6 @@ async function studentKursAnmelden() {
 	});
 
 	if (studentResult === 'OK') {
-
-		// Der Text für die Emailantwort an den Studenten wird zusammengestellt
-		const studentMessagetext = `
-		Hallo ${studentFirstName} ${studentLastName},<br><br>Ihre Buchung ist von der Email-Adresse ${studentEmail} eingelangt. Sie haben folgenden Kurs gebucht:<br><br>
-		${buchungsdetails}<br><br>Vielen Dank für Ihre Buchung, Sie erhalten in Kürze die Rechnung.<br><br>Mit freundlichen Grüßen,<br>Ihr KURSI-Team
-		`;
-
-		// Der Text für die Nachricht an die Administratoren wird zusammengestellt
-		const adminMessagetext = `
-		Hallo liebe Administratoren, eine neue Kursbuchung ist eingelangt. ${studentFirstName} ${studentLastName}, Email-Adresse ${studentEmail}, Wohnadresse ${studentStreet}, ${studentZipCode} ${studentCity} mit der Telefonnummer ${studentPhone} hat folgenden Kurs gebucht:
-		${buchungsdetails} - Dies ist eine automatische Nachricht.
-		`;
 
 		// Zusammenstellung des Bookings
 		const bookingData = {
@@ -453,6 +449,9 @@ async function studentKursAnmelden() {
 		}
 	
 		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Kurs gebucht!')
+		
+		// Nach der Erfolgsmeldung wird das Frontend einem Reset unterzogen
+		renderFrontendDisplay();
 	
 	} else {
 
