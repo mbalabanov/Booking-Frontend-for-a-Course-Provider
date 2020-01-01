@@ -375,9 +375,10 @@ async function buchenFormCheckPerson() {
 		if (rawBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
 
 			// Die Kursanmeldung ist nicht erforderlich, da die Person bereits für diesen Kurs angemeldet ist.
-			toastr.error('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet.', 'Ihr Benutzer war bereits angemeldet!');
+			toastr.error('Ein Benutzer mit Ihrer Email-Adresse ist bereits für diesen Kurs angemeldet: ' + messageSubject, 'Ihr Benutzer war bereits angemeldet!');
 
 			// Nach der Fehlermeldung wird das Frontend einem Reset unterzogen
+			$('#fewrapper').empty();
 			renderFrontendDisplay();
 		} else {				
 
@@ -470,9 +471,10 @@ async function studentKursAnmelden() {
 			await asyncAPI('post', adminMessageData, 'messages');
 		}
 	
-		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt.', 'Kurs gebucht!')
+		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt: ' + messageSubject, 'Kurs gebucht!')
 		
 		// Nach der Erfolgsmeldung wird das Frontend einem Reset unterzogen
+		$('#fewrapper').empty();
 		renderFrontendDisplay();
 	
 	} else {
@@ -481,6 +483,7 @@ async function studentKursAnmelden() {
 		toastr.error('Es ist ein Fehler bei der Buchung aufgetreten.', 'Fehler bei der Buchung')
 
 		// Nach der Fehlermeldung wird das Frontend einem Reset unterzogen
+		$('#fewrapper').empty();
 		renderFrontendDisplay();
 		return false;
 	}
