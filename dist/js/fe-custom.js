@@ -340,10 +340,6 @@ async function displayCourseBooking(filterEventID) {
 		if (studentLastName.length < 2) {
 			$('#studentLastNameCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihren Nachnamen ein.</div></small>');
 		}
-
-		if (studentEmail.length < 5) {
-			$('#studentEmailCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihre Email-Adresse ein.</div></small>');
-		}
 		
 		if(!(/\S+@\S+\.\S+/.test(studentEmail))) {
 			$('#studentEmailCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie eine gültige Email-Adresse ein.</div></small>');
