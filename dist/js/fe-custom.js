@@ -32,13 +32,13 @@ const APIURL = 'https://apiserver010.herokuapp.com/';
 // const APIURL = 'http://localhost:3000/';
 
 // Globale Variablen definieren
-const rawCoursesData = {};
-const rawEventsData = {};
-const rawLocationsData = {};
-const rawPersonsData = {};
-const rawTimetableData = {};
-const rawBookingsData = {};
-const rawMessagesData = {};
+let rawCoursesData = {};
+let rawEventsData = {};
+let rawLocationsData = {};
+let rawPersonsData = {};
+let rawTimetableData = {};
+let rawBookingsData = {};
+let rawMessagesData = {};
 
 let filteredCoursesData = {}; 
 let filteredEventsData = {};
