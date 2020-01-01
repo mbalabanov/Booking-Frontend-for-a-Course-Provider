@@ -12,15 +12,15 @@ const datumHeuteL = moment().format('L');
 toastr.options = {
   "closeButton": true,
   "debug": false,
-  "newestOnTop": true,
+  "newestOnTop": false,
   "progressBar": false,
   "positionClass": "toast-top-center",
   "preventDuplicates": true,
   "onclick": null,
   "showDuration": "300",
   "hideDuration": "1000",
-  "timeOut": "10000",
-  "extendedTimeOut": "1000",
+  "timeOut": "0",
+  "extendedTimeOut": "0",
   "showEasing": "swing",
   "hideEasing": "linear",
   "showMethod": "fadeIn",
@@ -54,7 +54,6 @@ let endDateMoment = '';
 let filterKursID = '';
 let filterEventID = '';
 let trainerMailList = [];
-let newTempStudent = {};
 
 let studentFirstName = '';
 let studentLastName = '';
@@ -329,6 +328,23 @@ async function displayCourseBooking(filterEventID) {
 		messageSubject = $('#kursbezeichnung').text();
 		buchungsdetails = $('#buchungsdetails').text();
 		
+		$('#studentFirstNameCheck').empty();
+		$('#studentLastNameCheck').empty();
+		$('#studentEmailCheck').empty();
+
+		// Eine sehr minimale Validierung
+		if (studentFirstName.length < 2) {
+			$('#studentFirstNameCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihren Vornamen ein.</div></small>');
+		}
+		
+		if (studentLastName.length < 2) {
+			$('#studentLastNameCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihren Nachnamen ein.</div></small>');
+		}
+
+		if (studentEmail.length < 5) {
+			$('#studentEmailCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihre Email-Adresse ein.</div></small>');
+		}
+		
 		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4) {
 			buchenFormCheckPerson();
 			$('#bookingModal').modal('hide');
@@ -338,6 +354,7 @@ async function displayCourseBooking(filterEventID) {
 
 }
 
+// Hier wird geprüft, ob die Person bereits existiert und ob für diesen Event bereits eine Buchung vorliegt
 async function buchenFormCheckPerson() {
 
 	// Vor der Buchung noch die Daten aktualisieren

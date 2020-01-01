@@ -122,54 +122,54 @@ const elementBookingModal = `
 			
 			<form id="formAnmeldungDaten" action="#" method="post">
 			  <div class="form-group row">
-				<label for="smtpmailerFirstname" class="col-sm-3 col-form-label text-right">Vorname:<sup>*</sup></label>
-				<div class="col-sm-5">
-					<input type="text" class="form-control" id="smtpmailerFirstname" name="firstname" required>
-				</div>
+				<label for="formFirstname" class="col-sm-3 col-form-label text-right">Vorname:<sup>*</sup></label>
 				<div class="col-sm-4">
+					<input type="text" class="form-control" id="formFirstname" name="firstname" required>
+				</div>
+				<div class="col-sm-5">
 					<span id="studentFirstNameCheck"></span>
 				</div>
 			  </div>
 			  <div class="form-group row">
-				<label for="smtpmailerLastname" class="col-sm-3 col-form-label text-right">Nachname:<sup>*</sup></label>
-				<div class="col-sm-5">
-					<input type="text" class="form-control" id="smtpmailerLastname" name="lastname" required>
-				</div>
+				<label for="formLastname" class="col-sm-3 col-form-label text-right">Nachname:<sup>*</sup></label>
 				<div class="col-sm-4">
+					<input type="text" class="form-control" id="formLastname" name="lastname" required>
+				</div>
+				<div class="col-sm-5">
 					<span id="studentLastNameCheck"></span>
 				</div>
 			  </div>
 			  <div class="form-group row">
-				<label for="smtpmailerTo" class="col-sm-3 col-form-label text-right">Email-Adresse:<sup>*</sup></label>
-				<div class="col-sm-5">
-					<input type="email" class="form-control" id="smtpmailerTo" name="to" required>
-				</div>
+				<label for="formTo" class="col-sm-3 col-form-label text-right">Email-Adresse:<sup>*</sup></label>
 				<div class="col-sm-4">
+					<input type="email" class="form-control" id="formTo" name="to" required>
+				</div>
+				<div class="col-sm-5">
 					<span id="studentEmailCheck"></span>
 				</div>
 			  </div>
 			  <div class="form-group row">
-				<label for="smtpmailerPhone" class="col-sm-3 col-form-label text-right">Telefonnummer:</label>
-				<div class="col-sm-5">
-					<input type="text" class="form-control" id="smtpmailerPhone" name="phone">
+				<label for="formPhone" class="col-sm-3 col-form-label text-right">Telefonnummer:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" id="formPhone" name="phone">
 				</div>
 			  </div>
 			  <div class="form-group row">
-				<label for="smtpmailerStreet" class="col-sm-3 col-form-label text-right">Wohnadresse:</label>
-				<div class="col-sm-5">
-					<input type="text" class="form-control" id="smtpmailerStreet" name="street">
+				<label for="formStreet" class="col-sm-3 col-form-label text-right">Wohnadresse:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" id="formStreet" name="street">
 				</div>
 			  </div>
 			  <div class="form-group row">
-				<label for="smtpmailerZipCode" class="col-sm-3 col-form-label text-right">Postleitzahl:</label>
-				<div class="col-sm-5">
-					<input type="text" class="form-control" id="smtpmailerZipCode" name="zipCode">
+				<label for="formZipCode" class="col-sm-3 col-form-label text-right">Postleitzahl:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" id="formZipCode" name="zipCode">
 				</div>
 			  </div>
 			  <div class="form-group row">
-				<label for="smtpmailerCity" class="col-sm-3 col-form-label text-right">Ort:</label>
-				<div class="col-sm-5">
-					<input type="text" class="form-control" id="smtpmailerCity" name="city">
+				<label for="formCity" class="col-sm-3 col-form-label text-right">Ort:</label>
+				<div class="col-sm-4">
+					<input type="text" class="form-control" id="formCity" name="city">
 				</div>
 			  </div>
 			  <input type="submit" class="btn btn-primary" id="buttonEventBuchung" value="Kurs buchen">
