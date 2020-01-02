@@ -495,5 +495,5 @@ function processing(){
 	$('#processing').modal('show');
 	setTimeout(function () {
 		$('#processing').modal('hide');
-	}, 5000);
+	}, 7000);
 }
