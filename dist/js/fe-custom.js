@@ -366,8 +366,8 @@ async function buchenFormCheckPerson() {
 	if (!rawPersonsData.find(item => item.email == studentEmail)) {
 
 		// Da es die Person noch nicht gibt (und sie somit nicht bereits bei einem Kurs angemeldet sein kann), wird die Person angelegt und die Kursanmeldung durchgeführt
-		studentAnlegen();
-		studentKursAnmelden();
+		await studentAnlegen();
+		await studentKursAnmelden()
 	} else {
 
 		// Da es die Person bereits gibt, wird nun nachgesehen, ob sie sich für diesen Event angemeldet hat.
@@ -383,7 +383,7 @@ async function buchenFormCheckPerson() {
 		} else {
 
 			// Es wird nur die Kursanmeldung durchgeführt.
-			studentKursAnmelden();
+			await studentKursAnmelden();
 		}
 	}
 }
@@ -418,6 +418,7 @@ async function studentKursAnmelden() {
 
 	// Anhand der Email-Adresse nachprüfen, wie die StudentID des neu angelegten Students lautet
 	rawPersonsData = await asyncAPI('get', null, 'persons');
+	
 	let filteredStudentIDData = rawPersonsData.filter(item => item.email == studentEmail);
 
 	// Der Text für die Emailantwort an den Studenten wird zusammengestellt
@@ -435,7 +436,9 @@ async function studentKursAnmelden() {
 	// ACHTUNG! Dieser Code kann wegen des Domain-spezifischen Tokens nicht lokal oder auf einer anderen Domain ausgeführt werden.
 	// Es wurde in der Angabe zwar nicht verlangt, eine Buchungs-Email an den Student zu schicken, es macht aber Sinn dies zu tun, damit die Person eine Anmeldebestätigung hat.
 	const studentResult = await Email.send({
-        SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
+		Host: "smtp.elasticemail.com",
+        Username: "marincomics@gmail.com",
+        Password: "09507D4DD15441299C7BB6F60FEC1766CF3B",
 		To : $('#formAnmeldungDaten [name=to]').val(),
 		From : "marincomics@gmail.com",
 		Subject : messageSubject,
