@@ -346,6 +346,7 @@ async function displayCourseBooking(filterEventID) {
 		}
 
 		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4 && /\S+@\S+\.\S+/.test(studentEmail)) {
+			processing();
 			buchenFormCheckPerson();
 			$('#bookingModal').modal('hide');
 		}
@@ -488,4 +489,11 @@ async function studentKursAnmelden() {
 		renderFrontendDisplay();
 		return false;
 	}
+}
+
+function processing(){
+	$('#processing').modal('show');
+	setTimeout(function () {
+		$('#processing').modal('hide');
+	}, 5000);
 }

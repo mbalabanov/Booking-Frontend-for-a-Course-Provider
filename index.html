@@ -10,37 +10,48 @@
 
   <title>KURSI | Kursinstitut</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap core CSS -->
+	<link href="plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Toastr -->
-  <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+	<!-- Toastr -->
+	<link rel="stylesheet" href="plugins/toastr/toastr.min.css">
 
-  <!-- Custom styles for this template -->
-  <link href="dist/css/fe-custom.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="dist/css/fe-custom.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-  <div id="fewrapper">
+	<div id="fewrapper">
 
-  </div>
+	</div>
 
-  <!-- Bootstrap core JavaScript -->
-  <script src="plugins/jquery/jquery.min.js"></script>
-  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="plugins/toastr/toastr.min.js"></script>
-  <script src="plugins/smtpjs/smtp.js"></script>
-  <script src="plugins/momentjs/moment-with-locales.js"></script>
-  <script src="plugins/axios/axios.min.js"></script>
-  <script src="dist/js/fe-elements.js"></script>
-  <script src="dist/js/fe-custom.js"></script>
+	<!-- Bootstrap core JavaScript -->
+	<script src="plugins/jquery/jquery.min.js"></script>
+	<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="plugins/toastr/toastr.min.js"></script>
+	<script src="plugins/smtpjs/smtp.js"></script>
+	<script src="plugins/momentjs/moment-with-locales.js"></script>
+	<script src="plugins/axios/axios.min.js"></script>
+	<script src="dist/js/fe-elements.js"></script>
+	<script src="dist/js/fe-custom.js"></script>
 
 
-  <script>
-  	renderFrontendDisplay();
-  </script>
+	<script>
+		renderFrontendDisplay();
+	</script>
+
+	<div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" id="processing">
+    	<div class="modal-dialog">
+        	<div class="modal-content">
+        		<div class="modal-body text-center">
+            		<p><img src="dist/img/loading.svg" alt="Processing"></p>
+            		<p><strong>Buchung wird verarbeitet...</strong></p>
+	        	</div>
+	        </div>
+    	</div>
+	</div>
 
 </body>
 
