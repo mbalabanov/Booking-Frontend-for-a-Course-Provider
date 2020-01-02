@@ -63,7 +63,7 @@ let studentStreet = '';
 let studentCity =  '';
 let studentZipCode = '';
 let messageSubject = '';
-let buchendetails = '';
+let buchungsdetails = '';
 
 
 // Funktion für die Ansprache der API (lesen und schreiben)
