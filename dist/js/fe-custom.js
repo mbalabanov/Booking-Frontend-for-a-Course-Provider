@@ -40,7 +40,7 @@ let rawTimetableData = {};
 let rawBookingsData = {};
 let rawMessagesData = {};
 
-let filteredCoursesData = {}; 
+let filteredCoursesData = {};
 let filteredEventsData = {};
 let filteredLocationsData = {};
 let filteredTrainersData = {};
@@ -70,9 +70,9 @@ let buchendetails = '';
 async function asyncAPI(method, data, table, id) {
     const newID = (!id) ? '' : id;
     const url = `${APIURL}${table}/${newID}`;
-    
+
     const response = await axios({
-        method, 
+        method,
         url,
         data,
         timeout: 10000
@@ -105,9 +105,9 @@ async function alleDatenHolen() {
 	rawTimetableData = await asyncAPI('get', null, 'timetables');
 	rawBookingsData = await asyncAPI('get', null, 'bookings');
 	rawMessagesData = await asyncAPI('get', null, 'messages');
-	
+
 	loadTeasers();
-	
+
 }
 
 // Die Boxen mit den Kursen auf der Startseite anzeigen
@@ -129,7 +129,7 @@ function loadTeasers() {
 		  </div>
 		`)
 	}
-	
+
 	// Wenn auf den Button im Kursteaser geklickt wird, dann wird die KursID übernommen und an die Funktion übergeben
 	$('.teaseropen').click(function() {
 		filterKursID = $(this).data('courseid')
@@ -139,11 +139,11 @@ function loadTeasers() {
 }
 
 async function displayCourseDetails(filterKursID) {
-	
+
 	// Die Daten werden anhand der übernommenen ID gefiltert, um die Detailansicht aufzubauen
 	filteredCoursesData = rawCoursesData.filter(item => item.id == filterKursID);
 	filteredEventsData = rawEventsData.filter(item => item.courseID == filterKursID);
-	
+
 	// Der Jumbotron am Anfang der Kursdetails wird angezeigt
 	$('#kurstitel')
 		.empty()
@@ -153,7 +153,7 @@ async function displayCourseDetails(filterKursID) {
 				<p>${filteredCoursesData[0].shortDescription}</p>
 			</div>
 		`);
-	
+
 	// Die Kurstabelle wird geleert, dann werden die einzelnen Event-Zeilen generiert, aus denen dann die Kurstabelle zusammengestellt wird
 	$('#kurstabelle').empty();
 	for (let i in filteredEventsData) {
@@ -181,7 +181,7 @@ async function displayCourseDetails(filterKursID) {
 		} else {
 			buchungsGrad=`<td><small><div class="alert alert-success text-center">Plätze frei</div></small></td><td><a href="stundenplan.html?course=${filteredCoursesData[0].id}&event=${filteredEventsData[i].id}" class="btn btn-outline-secondary btn-sm text-center" target="_blank">Stundenplan</a><br><a href="#" class="btn btn-primary btn-sm mt-2 text-center bookingopen" data-eventid="${filteredEventsData[i].id}" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#bookingModal">Jetzt buchen</a></td>`;
 		}
-		
+
 		// Wenn das Startdatum eines Kurses in der Vergangenheit liegt, dann wird die Kurstabelle die Buchungsoption und mit einem Hinweis angezeigt
 		if (moment().isAfter(filteredEventsData[i].startDate)) {
 			$('#kurstabelle').append(`
@@ -203,7 +203,7 @@ async function displayCourseDetails(filterKursID) {
 			`);
 		}
 	}
-	
+
 	// Die Kursbeschreibung wird zusammengestellt
 	$('#kursdetails')
 		.empty()
@@ -273,10 +273,10 @@ async function displayCourseDetails(filterKursID) {
 		$(function () {
 		  $('[data-toggle="popover"]').popover()
 		})
-		
+
 		// Das Modal für die Buchung wird auf der Seite vorbereitet
 		$('#fewrapper').append(elementBookingModal);
-		
+
 		// Der Button für die Buchung wird mit einem Eventlistener vorbereitet, damit bei Klick die Buchungsansicht angezeigt wird
 		$('.bookingopen').click(function() {
 			filterEventID = $(this).data('eventid')
@@ -316,7 +316,7 @@ async function displayCourseBooking(filterEventID) {
 	// Bei Klick auf den Button für die Event-Anmeldung wird das Formular validiert
     $('#buttonEventBuchung').click(function(event) {
      	event.preventDefault();
-		
+
 		// Die Anmeldedaten des Studenten werden geholt
 		studentFirstName = $('#formAnmeldungDaten [name=firstname]').val();
 		studentLastName = $('#formAnmeldungDaten [name=lastname]').val();
@@ -326,8 +326,8 @@ async function displayCourseBooking(filterEventID) {
 		studentCity = $('#formAnmeldungDaten [name=city]').val();
 		studentZipCode = $('#formAnmeldungDaten [name=zipCode]').val();
 		messageSubject = $('#kursbezeichnung').text();
-		buchungsdetails = $('#buchungsdetails').text();
-		
+		buchungsdetails = $('#buchungsdetails').html();
+
 		$('#studentFirstNameCheck').empty();
 		$('#studentLastNameCheck').empty();
 		$('#studentEmailCheck').empty();
@@ -336,20 +336,20 @@ async function displayCourseBooking(filterEventID) {
 		if (studentFirstName.length < 2) {
 			$('#studentFirstNameCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihren Vornamen ein.</div></small>');
 		}
-		
+
 		if (studentLastName.length < 2) {
 			$('#studentLastNameCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie Ihren Nachnamen ein.</div></small>');
 		}
-		
+
 		if(!(/\S+@\S+\.\S+/.test(studentEmail))) {
 			$('#studentEmailCheck').append('<small><div class="alert alert-danger text-center">Bitte geben Sie eine gültige Email-Adresse ein.</div></small>');
 		}
-		
+
 		if (studentFirstName.length > 1 && studentLastName.length > 1 && studentEmail.length > 4 && /\S+@\S+\.\S+/.test(studentEmail)) {
 			buchenFormCheckPerson();
 			$('#bookingModal').modal('hide');
 		}
-		
+
     });
 
 }
@@ -364,14 +364,14 @@ async function buchenFormCheckPerson() {
 
 	// Es wird abgefragt, ob es die Person bereits gibt
 	if (!rawPersonsData.find(item => item.email == studentEmail)) {
-	
+
 		// Da es die Person noch nicht gibt (und sie somit nicht bereits bei einem Kurs angemeldet sein kann), wird die Person angelegt und die Kursanmeldung durchgeführt
 		studentAnlegen();
 		studentKursAnmelden();
 	} else {
 
 		// Da es die Person bereits gibt, wird nun nachgesehen, ob sie sich für diesen Event angemeldet hat.
-		let filteredStudentID = rawPersonsData.filter(item => item.email == studentEmail);			
+		let filteredStudentID = rawPersonsData.filter(item => item.email == studentEmail);
 		if (rawBookingsData.find(item => item.studentID == filteredStudentID[0].id && item.eventID == filteredEventsData[0].id)) {
 
 			// Die Kursanmeldung ist nicht erforderlich, da die Person bereits für diesen Kurs angemeldet ist.
@@ -380,7 +380,7 @@ async function buchenFormCheckPerson() {
 			// Nach der Fehlermeldung wird das Frontend einem Reset unterzogen
 			$('#fewrapper').empty();
 			renderFrontendDisplay();
-		} else {				
+		} else {
 
 			// Es wird nur die Kursanmeldung durchgeführt.
 			studentKursAnmelden();
@@ -411,7 +411,7 @@ async function studentAnlegen() {
 
 	// Die neue Person wird über die API eingetragen
 	await asyncAPI('post', studentData, 'persons');
-	
+
 }
 
 async function studentKursAnmelden() {
@@ -465,18 +465,18 @@ async function studentKursAnmelden() {
 				personReceiverID: trainerMailList[i],
 				subject: messageSubject,
 				body: adminMessagetext,
-				read: false	
+				read: false
 			}
 
 			await asyncAPI('post', adminMessageData, 'messages');
 		}
-	
+
 		toastr.success('Ihre Kursanmeldung wurde erfolgreich durchgeführt: ' + messageSubject, 'Kurs gebucht!')
-		
+
 		// Nach der Erfolgsmeldung wird das Frontend einem Reset unterzogen
 		$('#fewrapper').empty();
 		renderFrontendDisplay();
-	
+
 	} else {
 
 		// Wenn die Email nicht verschickt werden kann, dann kommt diese Fehlermeldung
