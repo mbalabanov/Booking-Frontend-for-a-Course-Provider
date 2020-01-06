@@ -437,7 +437,7 @@ async function studentKursAnmelden() {
 	// ACHTUNG! Dieser Code kann wegen des Domain-spezifischen Tokens nicht lokal oder auf einer anderen Domain ausgeführt werden.
 	// Es wurde in der Angabe zwar nicht verlangt, eine Buchungs-Email an den Student zu schicken, es macht aber Sinn dies zu tun, damit die Person eine Anmeldebestätigung hat.
 	const studentResult = await Email.send({
-		SecureToken : "3f0bc627-f850-43c9-9aeb-b390eb67e21c",
+		SecureToken : "f28aa81a-c525-4d75-bbb5-92a8df57d1a4",
 		To : $('#formAnmeldungDaten [name=to]').val(),
 		From : "marincomics@gmail.com",
 		Subject : messageSubject,
