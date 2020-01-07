@@ -6,12 +6,3 @@
 body {
   padding-top: 56px;
 }
-
-
-body {
-  background-image: url("../img/hero-background4.jpg");
-  background-color: #ffffff;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
